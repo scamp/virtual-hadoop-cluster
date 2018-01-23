@@ -50,6 +50,20 @@ SCRIPT
 
 Vagrant.configure("2") do |config|
 
+  # Install required plugins
+  required_plugins = %w( vagrant-hostmanager vagrant-disksize )
+  _retry = false
+  required_plugins.each do |plugin|
+    unless Vagrant.has_plugin? plugin
+      system "vagrant plugin install #{plugin}"
+      _retry=true
+    end
+  end
+
+  if (_retry)
+    exec "vagrant " + ARGV.join(' ')
+  end
+
   # Define base image
   config.vm.box = "ubuntu/xenial64"
 

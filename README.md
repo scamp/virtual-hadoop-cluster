@@ -19,18 +19,10 @@ Depending on the hardware of your computer, installation will probably take betw
 
 First install [VirtualBox](https://www.virtualbox.org/) and [Vagrant](http://www.vagrantup.com/).
 
-Install the Vagrant plugins: [Hostmanager ](https://github.com/smdahlen/vagrant-hostmanager) and [Disksize ](https://github.com/sprotheroe/vagrant-disksize)
-
-```bash
-$ vagrant plugin install vagrant-hostmanager
-$ vagrant plugin install vagrant-disksize
-
-```
-
 Clone this repository.
 
 ```bash
-$ git clone https://github.com/DandyDev/virtual-hadoop-cluster.git
+$ git clone https://github.com/scamp/virtual-hadoop-cluster.git
 ```
 
 Provision the bare cluster. It will ask you to enter your password, so it can modify your `/etc/hosts` file for easy access in your browser. It uses the Vagrant Hostmanager plugin to do this.
