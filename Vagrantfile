@@ -17,9 +17,13 @@ curl -s http://$CM_REPO_HOST/cm$CM_MAJOR_VERSION/$OS_DISTID/$OS_CODENAME/amd64/c
 apt-key add key
 rm key
 fi
+add-apt-repository -y ppa:webupd8team/java
+echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
 apt-get update
 export DEBIAN_FRONTEND=noninteractive
-apt-get -q -y --force-yes install oracle-j2sdk1.7 cloudera-manager-server-db cloudera-manager-server cloudera-manager-daemons
+apt-get -q -y --force-yes install oracle-java8-installer
+apt-get -q -y --force-yes install cloudera-manager-server-db cloudera-manager-server cloudera-manager-daemons
 service cloudera-scm-server-db initdb
 service cloudera-scm-server-db start
 service cloudera-scm-server start
@@ -39,11 +43,15 @@ ff02::2 ip6-allrouters
 EOF
 SCRIPT
 
+$sshd_script = <<SCRIPT
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+service sshd reload
+SCRIPT
+
 Vagrant.configure("2") do |config|
 
   # Define base image
-  config.vm.box = "precise64"
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  config.vm.box = "ubuntu/xenial64"
 
   # Manage /etc/hosts on host and VMs
   config.hostmanager.enabled = false
@@ -61,10 +69,10 @@ Vagrant.configure("2") do |config|
     master.vm.provision :shell, :inline => $hosts_script
     master.vm.provision :hostmanager
     master.vm.provision :shell, :inline => $master_script
+    master.vm.provision :shell, :inline => $sshd_script
   end
 
   config.vm.define :slave1 do |slave1|
-    slave1.vm.box = "precise64"
     slave1.vm.provider :virtualbox do |v|
       v.name = "vm-cluster-node2"
       v.customize ["modifyvm", :id, "--memory", "2048"]
@@ -73,10 +81,10 @@ Vagrant.configure("2") do |config|
     slave1.vm.hostname = "vm-cluster-node2"
     slave1.vm.provision :shell, :inline => $hosts_script
     slave1.vm.provision :hostmanager
+    slave1.vm.provision :shell, :inline => $sshd_script
   end
 
   config.vm.define :slave2 do |slave2|
-    slave2.vm.box = "precise64"
     slave2.vm.provider :virtualbox do |v|
       v.name = "vm-cluster-node3"
       v.customize ["modifyvm", :id, "--memory", "2048"]
@@ -85,10 +93,10 @@ Vagrant.configure("2") do |config|
     slave2.vm.hostname = "vm-cluster-node3"
     slave2.vm.provision :shell, :inline => $hosts_script
     slave2.vm.provision :hostmanager
+    slave2.vm.provision :shell, :inline => $sshd_script
   end
 
   config.vm.define :slave3 do |slave3|
-    slave3.vm.box = "precise64"
     slave3.vm.provider :virtualbox do |v|
       v.name = "vm-cluster-node4"
       v.customize ["modifyvm", :id, "--memory", "2048"]
@@ -97,6 +105,7 @@ Vagrant.configure("2") do |config|
     slave3.vm.hostname = "vm-cluster-node4"
     slave3.vm.provision :shell, :inline => $hosts_script
     slave3.vm.provision :hostmanager
+    slave3.vm.provision :shell, :inline => $sshd_script
   end
 
 end
