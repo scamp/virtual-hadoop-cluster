@@ -53,6 +53,9 @@ Vagrant.configure("2") do |config|
   # Define base image
   config.vm.box = "ubuntu/xenial64"
 
+  # Set the disk size
+  config.disksize.size = "25GB"
+
   # Manage /etc/hosts on host and VMs
   config.hostmanager.enabled = false
   config.hostmanager.manage_host = true

@@ -19,10 +19,12 @@ Depending on the hardware of your computer, installation will probably take betw
 
 First install [VirtualBox](https://www.virtualbox.org/) and [Vagrant](http://www.vagrantup.com/).
 
-Install the Vagrant [Hostmanager plugin](https://github.com/smdahlen/vagrant-hostmanager)
+Install the Vagrant plugins: [Hostmanager ](https://github.com/smdahlen/vagrant-hostmanager) and [Disksize ](https://github.com/sprotheroe/vagrant-disksize)
 
 ```bash
 $ vagrant plugin install vagrant-hostmanager
+$ vagrant plugin install vagrant-disksize
+
 ```
 
 Clone this repository.
