@@ -82,7 +82,7 @@ Vagrant.configure("2") do |config|
       v.customize ["modifyvm", :id, "--memory", "6144"]
     end
     master.vm.network :private_network, ip: "10.211.55.100"
-    master.vm.hostname = "vm-cluster-node1"
+    master.vm.hostname = "vm-cluster-node1.example.org"
     master.vm.provision :shell, :inline => $hosts_script
     master.vm.provision :hostmanager
     master.vm.provision :shell, :inline => $master_script
@@ -95,7 +95,7 @@ Vagrant.configure("2") do |config|
       v.customize ["modifyvm", :id, "--memory", "2048"]
     end
     slave1.vm.network :private_network, ip: "10.211.55.101"
-    slave1.vm.hostname = "vm-cluster-node2"
+    slave1.vm.hostname = "vm-cluster-node2.example.org"
     slave1.vm.provision :shell, :inline => $hosts_script
     slave1.vm.provision :hostmanager
     slave1.vm.provision :shell, :inline => $sshd_script
@@ -107,7 +107,7 @@ Vagrant.configure("2") do |config|
       v.customize ["modifyvm", :id, "--memory", "2048"]
     end
     slave2.vm.network :private_network, ip: "10.211.55.102"
-    slave2.vm.hostname = "vm-cluster-node3"
+    slave2.vm.hostname = "vm-cluster-node3.example.org"
     slave2.vm.provision :shell, :inline => $hosts_script
     slave2.vm.provision :hostmanager
     slave2.vm.provision :shell, :inline => $sshd_script
@@ -119,10 +119,28 @@ Vagrant.configure("2") do |config|
       v.customize ["modifyvm", :id, "--memory", "2048"]
     end
     slave3.vm.network :private_network, ip: "10.211.55.103"
-    slave3.vm.hostname = "vm-cluster-node4"
+    slave3.vm.hostname = "vm-cluster-node4.example.org"
     slave3.vm.provision :shell, :inline => $hosts_script
     slave3.vm.provision :hostmanager
     slave3.vm.provision :shell, :inline => $sshd_script
+  end
+
+  config.vm.define :freeipa do |freeipa|
+    freeipa.vm.provider :virtualbox do |v|
+      v.name = "freeipa"
+      v.customize ["modifyvm", :id, "--memory", "1024"]
+    end
+    freeipa.vm.box = "vStone/centos-7.x-puppet.3.x"
+    freeipa.vm.network :private_network, ip: "10.211.55.200"
+    freeipa.vm.hostname = "freeipa.example.org"
+    freeipa.vm.provision :shell, :inline => $hosts_script
+    freeipa.vm.provision :hostmanager
+    freeipa.vm.provision :shell, :inline => $sshd_script
+    # And install freeipa:
+    freeipa.vm.provision :shell, :inline => "puppet module install huit/ipa"
+    freeipa.vm.provision "puppet" do |puppet|
+	  puppet.manifest_file = "default.pp"
+	end
   end
 
 end
